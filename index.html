@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KKA Ürituse Eelkontroll</title>
+<style>
+  :root {
+    --green: #2e7d32; --green-bg: #e8f5e9; --green-border: #81c784;
+    --yellow: #e65100; --yellow-bg: #fff3e0; --yellow-border: #ffb74d;
+    --red: #c62828; --red-bg: #ffebee; --red-border: #ef9a9a;
+    --blue: #1565c0; --blue-bg: #e3f2fd; --blue-border: #90caf9;
+    --gray: #37474f; --gray-bg: #f5f5f5; --gray-border: #bdbdbd;
+    --teal: #00695c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+         background: #f0f4f8; color: #263238; line-height: 1.5; }
+  .container { max-width: 760px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  .header { background: var(--teal); color: white; padding: 28px 20px; border-radius: 12px;
+            margin-bottom: 24px; text-align: center; }
+  .header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+  .header p  { opacity: .85; font-size: .95rem; }
+
+  .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px;
+          box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+  .card h2 { font-size: 1.1rem; color: var(--teal); margin-bottom: 16px; display: flex;
+             align-items: center; gap: 8px; }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-weight: 600; margin-bottom: 6px; font-size: .9rem; color: #455a64; }
+  .field input, .field select { width: 100%; padding: 10px 14px; border: 1.5px solid #cfd8dc;
+    border-radius: 8px; font-size: 1rem; background: white; transition: border .2s; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--teal); }
+  .field .hint { font-size: .8rem; color: #78909c; margin-top: 4px; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-primary { width: 100%; padding: 14px; background: var(--teal); color: white;
+    border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700;
+    cursor: pointer; transition: background .2s; margin-top: 8px; }
+  .btn-primary:hover { background: #004d40; }
+  .btn-primary:disabled { background: #b0bec5; cursor: default; }
+
+  /* Results */
+  .result-header { display: flex; align-items: center; gap: 14px; padding: 18px 20px;
+    border-radius: 10px; margin-bottom: 16px; }
+  .result-icon { font-size: 2.2rem; line-height: 1; flex-shrink: 0; }
+  .result-title { font-size: 1.25rem; font-weight: 700; }
+  .result-sub   { font-size: .9rem; opacity: .85; margin-top: 2px; }
+
+  .result-red    { background: var(--red-bg);    border: 2px solid var(--red-border); }
+  .result-yellow { background: var(--yellow-bg); border: 2px solid var(--yellow-border); }
+  .result-green  { background: var(--green-bg);  border: 2px solid var(--green-border); }
+
+  .finding { border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; border-left: 4px solid; }
+  .finding-red    { background: var(--red-bg);    border-color: var(--red); }
+  .finding-yellow { background: var(--yellow-bg); border-color: var(--yellow); }
+  .finding-green  { background: var(--green-bg);  border-color: var(--green); }
+  .finding-blue   { background: var(--blue-bg);   border-color: var(--blue); }
+  .finding-gray   { background: var(--gray-bg);   border-color: var(--gray-border); }
+
+  .finding h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
+  .finding p  { font-size: .88rem; margin-bottom: 5px; }
+  .finding .legal { font-size: .78rem; color: #78909c; font-style: italic; }
+
+  .suggestion { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 8px;
+                padding: 12px 14px; margin-top: 8px; font-size: .88rem; }
+  .suggestion strong { color: var(--green); }
+
+  .conditions { margin-top: 4px; padding-left: 16px; }
+  .conditions li { font-size: .85rem; margin-bottom: 3px; }
+
+  .eelis-badge { display: inline-block; background: #e3f2fd; color: #1565c0; font-size: .75rem;
+    font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
+
+  .loading { text-align: center; padding: 30px; color: #78909c; }
+  .spinner { width: 36px; height: 36px; border: 3px solid #e0e0e0;
+    border-top-color: var(--teal); border-radius: 50%; animation: spin .8s linear infinite;
+    margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: .78rem;
+         font-weight: 600; margin-left: 4px; }
+  .tag-i  { background: #ffcdd2; color: #b71c1c; }
+  .tag-ii { background: #ffe0b2; color: #bf360c; }
+  .tag-iii{ background: #fff9c4; color: #827717; }
+
+  .divider { border: none; border-top: 1px solid #e0e0e0; margin: 16px 0; }
+
+  .section-title { font-size: .8rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: #90a4ae; margin: 16px 0 8px; }
+
+  .footer-note { font-size: .82rem; color: #90a4ae; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--teal); }
+
+  @media (max-width: 520px) {
+    .row2 { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>🌿 KKA Ürituse Eelkontroll</h1>
+    <p>Kontrolli oma ürituse plaani enne Keskkonnaameti taotluse esitamist</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="card" id="formCard">
+    <h2>📋 Ürituse andmed</h2>
+
+    <div class="field">
+      <label for="areaInput">Kaitseala / piirkond</label>
+      <input type="text" id="areaInput" placeholder="nt Põhja-Kõrvemaa, Luitemaa, Lahemaa..." autocomplete="off">
+      <div class="hint">Kirjuta kaitseala nimi — nt nagu see on Maa-ameti kaardil</div>
+      <div id="areaSuggestions" style="position:relative"></div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="dateInput">Ürituse kuupäev</label>
+        <input type="date" id="dateInput">
+      </div>
+      <div class="field">
+        <label for="participantsInput">Osalejate arv</label>
+        <input type="number" id="participantsInput" placeholder="nt 150" min="1">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="activityInput">Tegevuse tüüp</label>
+      <select id="activityInput">
+        <option value="">— vali tegevus —</option>
+        <option value="orienteerumine">Orienteerumine / rogain</option>
+        <option value="jooks">Jooksuvõistlus / maastikujooks</option>
+        <option value="rattasõit">Rattavõistlus / rattamatk</option>
+        <option value="suusatamine">Suusamaraton / suusatamine</option>
+        <option value="kaanoosõit">Kanuumatkamine / veesport</option>
+        <option value="matk">Matk / loodustuur</option>
+        <option value="muu">Muu rahvaüritus</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" id="checkBtn" onclick="runCheck()">
+      🔍 Kontrolli
+    </button>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" style="display:none"></div>
+
+  <div class="footer-note">
+    Põhineb 254 KKA otsuse analüüsil (2016–2026) ning looduskaitseseaduse ja liikide kaitsemääruste andmetel.<br>
+    Eelkontroll ei asenda KKA ametlikku otsust — esita alati ka taotlus.
+    <span class="eelis-badge">EELIS WFS</span> andmed: gsavalik.envir.ee (CC-BY 4.0)
+  </div>
+</div>
+
+<script>
+// ============================================================
+// LAYER 1: KÕVAKODEERITUD HOOAJALISED PIIRANGUD
+// ============================================================
+const SEASONAL_RULES = [
+  {
+    id: "merikotkas_skv",
+    species: "Merikotkas",
+    latinName: "Haliaeetus albicilla",
+    category: "I",
+    startM: 2, startD: 15,  // 15.02
+    endM: 7,   endD: 31,    // 31.07
+    zoneTypes: ["sihtkaitsevönd", "püsielupaik"],
+    severity: "red",
+    title: "Merikotka pesitsuskeeld",
+    description: "Merikotka püsielupaiga sihtkaitsevööndis on ajavahemikus 15.02–31.07 liikumine keelatud. Merikotkas on väga tundlik häirimise suhtes — üks ühekordne häiring võib kurna hüljata.",
+    suggestion: "Nihutage üritus 01.08 – 14.02 perioodi. August–oktoober on turvaline.",
+    legal: "KM 13.01.2005 määrus nr 2; LKS § 50"
+  },
+  {
+    id: "metsis_skv",
+    species: "Metsis",
+    latinName: "Tetrao urogallus",
+    category: "II",
+    startM: 2, startD: 1,
+    endM: 5,   endD: 31,
+    zoneTypes: ["sihtkaitsevönd", "püsielupaik"],
+    severity: "red",
+    title: "Metsise pesitsuskeeld",
+    description: "Metsise püsielupaiga sihtkaitsevööndis on ajavahemikus 01.02–31.05 liikumine keelatud. Piiranguvööndis on keelatud kontrollpunktide paigaldamine leiukoha lähedale.",
+    suggestion: "Lubatud periood on 01.06–31.01. Juuni on esimene ohutu kuu.",
+    legal: "KM 13.01.2005 määrus nr 1; LKS § 50"
+  },
+  {
+    id: "general_breeding",
+    species: null,
+    category: null,
+    startM: 3, startD: 15,
+    endM: 6,   endD: 30,
+    zoneTypes: ["kõik"],
+    severity: "yellow",
+    title: "Üldine pesitsushooaeg",
+    description: "Märts–juuni on enamiku kaitsealuste lindude pesitsusperiood. Ka ilma konkreetse keeluta võib KKA nõuda marsruudi kohandamist liikide elupaigast kaugemale.",
+    suggestion: "Täpne riskitase sõltub ala liigistikust. Kontrollige EELIS-est, milliseid II kat. liike alal esineb.",
+    legal: "LKS § 55 — kaitsealuste liikide häirimine keelatud"
+  }
+];
+
+// ============================================================
+// LAYER 2: ALA-SPETSIIFILISED VIIBIMISKEELUD (kaitse-eeskirjadest)
+// ============================================================
+const AREA_RESTRICTIONS = [
+  {
+    areaKeywords: ["orkjärve", "orkjarve"],
+    zone: "Orkjärve raba SKV",
+    startM: 2, startD: 1,
+    endM: 5,   endD: 31,
+    severity: "red",
+    title: "Orkjärve raba viibimiskeeld",
+    description: "Orkjärve looduskaitseala sihtkaitsevööndis kehtib viibimiskeeld 01.02–31.05. Loodusala kaitseb raba, rabametsi ja kaljukotka elupaika.",
+    suggestion: "Lubatud periood on 01.06–31.01. Esitage KKA-le uus taotlus sügis- või talvekuupäevaga.",
+    legal: "VV 07.07.2005 määrus nr 164 §4; Kinnitatud 2025-12 KKA Seisukohas."
+  },
+  {
+    areaKeywords: ["luitemaa", "vanamännik", "vanamännik"],
+    zone: "Luitemaa Vanamänniku SKV",
+    startM: 2, startD: 1,
+    endM: 7,   endD: 15,
+    severity: "red",
+    title: "Luitemaa Vanamänniku SKV liikumiskeeld",
+    description: "Luitemaa looduskaitseala Vanamänniku sihtkaitsevööndis on liikumiskeeluaeg 01.02–15.07. See on pikem kui üldine pesitsusaeg — sihtkaitsevööndi kaitse on rangem.",
+    suggestion: "Lubatud periood on 16.07–31.01. Juuli teine pool on juba ohutu.",
+    legal: "VV 26.10.2006 määrus nr 223; Kinnitatud 2018 OK West otsuses."
+  },
+  {
+    areaKeywords: ["lahemaa"],
+    zone: "Lahemaa rahvuspark",
+    startM: 1, startD: 1,
+    endM: 12,  endD: 31,
+    severity: "yellow",
+    title: "Lahemaa — tingimused alati",
+    description: "Lahemaa rahvuspark on kompleksne ala mitmete SKV-de ja PV-dega. KKA annab tavaliselt nõusoleku, aga lisab alati spetsiifilisi tingimusi RMK taristu kasutamise ja metsise/kanakulli elupaikade kohta.",
+    suggestion: "Kooskõlastage paralleelselt ka RMK-ga. Lisage taotlusele täpne GPX-rada.",
+    legal: "VV 05.04.2007 määrus nr 100 (Lahemaa rahvuspark)"
+  },
+  {
+    areaKeywords: ["kõrvemaa", "korvemaa", "põhja-kõrvemaa"],
+    zone: "Põhja-Kõrvemaa LKA",
+    startM: 1, startD: 1,
+    endM: 12,  endD: 31,
+    severity: "yellow",
+    title: "Kõrvemaa — tuntud probleempiirkond",
+    description: "Põhja-Kõrvemaa looduskaitseala on orienteerumis- ja rattavõistluste jaoks sage sihtkoht. Ala läbib metsise, kanakulli ja merikotka elupaiku. 2025. aastal sai siit üks korraldaja Seisukohta (de facto keeldumise).",
+    suggestion: "KKA nõuab alati ranget teedel püsimist, keeldu KP-de paigaldamisel elupaika ja mürahäirimise vältimist metsise elupaiga trassil. Võistlusajal (mai–juuni) on kõrgem risk — august–september on märksa ohutum.",
+    legal: "VV 09.05.2005 määrus nr 108; korduvad otsused 2022–2025."
+  },
+  {
+    areaKeywords: ["otepää", "otepaa"],
+    zone: "Otepää looduspark",
+    startM: 1, startD: 1,
+    endM: 12,  endD: 31,
+    severity: "yellow",
+    title: "Otepää looduspark — tavapärane tingimustega",
+    description: "Otepää looduspark on regulaarselt kasutatav suusa- ja seiklusvõistluste jaoks. KKA on andnud nõusolekuid Seiklushundi rogainidele ja triatlonile. Tavaliselt antav, aga tingimustega.",
+    suggestion: "Lisage taotlusele GPX, viide RMK kooskõlastusele ja kinnitage, et võistlusrada kulgeb olemasolevatel teedel.",
+    legal: "VV 27.04.2000 määrus nr 146; otsused 2016–2025."
+  }
+];
+
+// ============================================================
+// LAYER 3: TUNTUD PROBLEEMPIIRKONNAD (corpusest tuletatud)
+// ============================================================
+const KNOWN_ISSUES = [
+  {
+    keywords: ["paunküla"],
+    name: "Paunküla piirkond",
+    issue: "Metsise püsielupaigad on kinnitunud probleemiks. Vähemalt 3 erinevat korraldajat (TON mai 2022, OK Nõmme juuni 2022, Xdream oktoober 2023) on samas piirkonnas metsise elupaigaga kokku puutunud.",
+    risk: "yellow"
+  },
+  {
+    keywords: ["soomaa"],
+    name: "Soomaa rahvuspark",
+    issue: "Soomaa on veekogude ja üleujutusaladega kompleksne ala. Kanuumatk on põhitegevus, aga üleujutushooajal (tavaliselt märts–aprill) on ligipääs piiratud looduslikul põhjusel.",
+    risk: "yellow"
+  },
+  {
+    keywords: ["viitna"],
+    name: "Viitna piirkond (Põhja-Kõrvemaa LKA)",
+    issue: "Viitna on populaarne jooksuvõistluste lähtepunkt Põhja-Kõrvemaa LKAs. Metsise elupaigad on kogu piirkonda hajusalt registreeritud.",
+    risk: "yellow"
+  }
+];
+
+// ============================================================
+// UNIVERSAL CONDITIONS (shown in all green/yellow results)
+// ============================================================
+const UNIVERSAL_CONDITIONS = [
+  "Võistlusrada kulgeb üksnes olemasolevatel teedel ja radadel — trassist kõrvale kalduda ei tohi",
+  "Sõidukid (sh korraldajate autod) tohivad sõita ainult olemasolevatel teedel ja parkida ainult selleks ettenähtud kohtades",
+  "Kaitsealuste liikide elupaigadesse ei tohi paigaldada kontrollpunkte, toidu-/joogipunkte ega teeninduspunkte",
+  "Kaitsealuseid taimi ei tohi tallata, puid mitte kahjustada, loomi mitte häirida",
+  "Korraldaja tagab ala heakorra — enne ja pärast üritust",
+];
+
+// ============================================================
+// EELIS WFS QUERY (Layer 2)
+// ============================================================
+async function queryEELIS(areaName) {
+  const BASE = "https://gsavalik.envir.ee/geoserver/eelis/ows";
+  const params = new URLSearchParams({
+    service: "WFS",
+    version: "2.0.0",
+    request: "GetFeature",
+    typeName: "eelis:kl_looduskaitseala",
+    outputFormat: "application/json",
+    CQL_FILTER: `strToLowerCase(nimetus) LIKE '%${areaName.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}%'`,
+    count: "5"
+  });
+  try {
+    const resp = await fetch(`${BASE}?${params}`, {signal: AbortSignal.timeout(8000)});
+    if (!resp.ok) return null;
+    const json = await resp.json();
+    return json.features || [];
+  } catch(e) {
+    return null; // fail silently — layer 1 is enough
+  }
+}
+
+async function queryEELISZones(bbox) {
+  // Query zone types within a bounding box
+  const BASE = "https://gsavalik.envir.ee/geoserver/eelis/ows";
+  const [minX, minY, maxX, maxY] = bbox;
+  const params = new URLSearchParams({
+    service: "WFS",
+    version: "2.0.0",
+    request: "GetFeature",
+    typeName: "eelis:kl_kaitseala_vond",
+    outputFormat: "application/json",
+    BBOX: `${minX},${minY},${maxX},${maxY},EPSG:4326`,
+    count: "20"
+  });
+  try {
+    const resp = await fetch(`${BASE}?${params}`, {signal: AbortSignal.timeout(8000)});
+    if (!resp.ok) return null;
+    const json = await resp.json();
+    return json.features || [];
+  } catch(e) { return null; }
+}
+
+// ============================================================
+// DATE HELPERS
+// ============================================================
+function isInRange(date, startM, startD, endM, endD) {
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  const start = startM * 100 + startD;
+  const end   = endM   * 100 + endD;
+  const cur   = m * 100 + d;
+  if (start <= end) {
+    return cur >= start && cur <= end;
+  } else {
+    // wraps year (e.g. Nov–Feb)
+    return cur >= start || cur <= end;
+  }
+}
+
+function daysUntilRangeEnd(date, endM, endD) {
+  const year = date.getFullYear();
+  let end = new Date(year, endM - 1, endD);
+  if (end < date) end = new Date(year + 1, endM - 1, endD);
+  return Math.ceil((end - date) / 86400000);
+}
+
+function formatDate(m, d) {
+  return `${String(d).padStart(2,'0')}.${String(m).padStart(2,'0')}`;
+}
+
+// ============================================================
+// AUTOCOMPLETE
+// ============================================================
+const KNOWN_AREAS = [
+  "Põhja-Kõrvemaa looduskaitseala", "Kõrvemaa looduskaitseala",
+  "Lahemaa rahvuspark", "Soomaa rahvuspark", "Otepää looduspark",
+  "Luitemaa looduskaitseala", "Matsalu rahvuspark", "Vilsandi rahvuspark",
+  "Endla looduskaitseala", "Nigula looduskaitseala",
+  "Pühajärve looduskaitseala", "Aegviidu looduskaitseala",
+  "Alam-Pedja looduskaitseala", "Muraka looduskaitseala",
+  "Karula rahvuspark", "Haanja looduspark", "Emajõe-Suursoo kaitseala",
+  "Orkjärve looduskaitseala", "Türisalu maastikukaitseala",
+  "Keila-Joa maastikukaitseala", "Paldiski maastikukaitseala",
+  "Rebala maastikukaitseala", "Valgeranna looduskaitseala",
+  "Meenikunno looduskaitseala", "Kuremäe looduskaitseala",
+];
+
+const areaInput = document.getElementById('areaInput');
+const suggestionsBox = document.getElementById('areaSuggestions');
+
+areaInput.addEventListener('input', () => {
+  const val = areaInput.value.toLowerCase();
+  suggestionsBox.innerHTML = '';
+  if (val.length < 2) return;
+  const matches = KNOWN_AREAS.filter(a => a.toLowerCase().includes(val)).slice(0, 5);
+  if (!matches.length) return;
+  const ul = document.createElement('ul');
+  ul.style.cssText = 'position:absolute;z-index:10;width:100%;background:white;border:1.5px solid #cfd8dc;border-top:none;border-radius:0 0 8px 8px;list-style:none;padding:0;max-height:200px;overflow-y:auto;';
+  matches.forEach(m => {
+    const li = document.createElement('li');
+    li.textContent = m;
+    li.style.cssText = 'padding:10px 14px;cursor:pointer;font-size:.9rem;';
+    li.onmouseenter = () => li.style.background = '#f0f4f8';
+    li.onmouseleave = () => li.style.background = '';
+    li.onclick = () => { areaInput.value = m; suggestionsBox.innerHTML = ''; };
+    ul.appendChild(li);
+  });
+  suggestionsBox.appendChild(ul);
+});
+document.addEventListener('click', e => { if (!areaInput.contains(e.target)) suggestionsBox.innerHTML = ''; });
+
+// ============================================================
+// MAIN CHECK FUNCTION
+// ============================================================
+async function runCheck() {
+  const area = areaInput.value.trim();
+  const dateStr = document.getElementById('dateInput').value;
+  const activity = document.getElementById('activityInput').value;
+  const participants = parseInt(document.getElementById('participantsInput').value) || 0;
+
+  if (!area) { alert('Palun sisesta kaitseala nimi.'); return; }
+  if (!dateStr) { alert('Palun vali ürituse kuupäev.'); return; }
+  if (!activity) { alert('Palun vali tegevuse tüüp.'); return; }
+
+  const date = new Date(dateStr);
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.style.display = 'block';
+  resultsDiv.innerHTML = `<div class="card"><div class="loading"><div class="spinner"></div><p>Kontrollin piiranguid...</p></div></div>`;
+
+  // Small delay so UI updates
+  await new Promise(r => setTimeout(r, 50));
+
+  const findings = [];
+
+  // --- LAYER 1: Seasonal rules ---
+  for (const rule of SEASONAL_RULES) {
+    if (isInRange(date, rule.startM, rule.startD, rule.endM, rule.endD)) {
+      const daysLeft = daysUntilRangeEnd(date, rule.endM, rule.endD);
+      findings.push({
+        layer: 1,
+        severity: rule.severity,
+        title: rule.title,
+        body: rule.description,
+        extra: `Keeluperiood: ${formatDate(rule.startM, rule.startD)} – ${formatDate(rule.endM, rule.endD)} (lõpuni ${daysLeft} päeva)`,
+        suggestion: rule.suggestion,
+        legal: rule.legal,
+        tag: rule.category ? `${rule.category} kat` : null,
+        species: rule.species
+      });
+    }
+  }
+
+  // --- LAYER 2: Area-specific restrictions ---
+  const areaLower = area.toLowerCase();
+  for (const ar of AREA_RESTRICTIONS) {
+    if (ar.areaKeywords.some(k => areaLower.includes(k))) {
+      const isActive = ar.startM === 1 && ar.endM === 12 ? false :
+        isInRange(date, ar.startM, ar.startD, ar.endM, ar.endD);
+      if (isActive) {
+        const daysLeft = daysUntilRangeEnd(date, ar.endM, ar.endD);
+        findings.push({
+          layer: 2,
+          severity: ar.severity,
+          title: ar.title,
+          body: ar.description,
+          extra: `Keeluperiood sellel alal: ${formatDate(ar.startM, ar.startD)} – ${formatDate(ar.endM, ar.endD)} (lõpuni ${daysLeft} päeva)`,
+          suggestion: ar.suggestion,
+          legal: ar.legal
+        });
+      } else if (ar.startM !== 1) {
+        // Area known but currently outside restriction
+        findings.push({
+          layer: 2,
+          severity: "green",
+          title: ar.title + " (keeluvälised kuupäevad ✓)",
+          body: `Teie valitud kuupäev jääb väljaspoole selle ala keeluajavahemiku (${formatDate(ar.startM, ar.startD)}–${formatDate(ar.endM, ar.endD)}). Hooajaline otsene takistus puudub.`,
+          extra: null,
+          suggestion: null,
+          legal: ar.legal
+        });
+      } else {
+        // Always-on area info (Lahemaa, Kõrvemaa etc.)
+        findings.push({
+          layer: 2,
+          severity: ar.severity,
+          title: ar.title,
+          body: ar.description,
+          extra: null,
+          suggestion: ar.suggestion,
+          legal: ar.legal
+        });
+      }
+    }
+  }
+
+  // --- LAYER 3: Known problem areas ---
+  for (const ki of KNOWN_ISSUES) {
+    if (ki.keywords.some(k => areaLower.includes(k))) {
+      findings.push({
+        layer: 3,
+        severity: ki.risk,
+        title: `⚠️ Tuntud probleempiirkond: ${ki.name}`,
+        body: ki.issue,
+        extra: null,
+        suggestion: null,
+        legal: "Allikas: 254 KKA otsuse analüüs 2016–2026"
+      });
+    }
+  }
+
+  // --- Participants threshold ---
+  if (participants > 50) {
+    findings.push({
+      layer: 1,
+      severity: "yellow",
+      title: "Üle 50 osaleja — kohustuslik KKA nõusolek",
+      body: `Rohkem kui 50 osalejaga rahvaürituse korraldamine kaitsealal on lubatud üksnes kaitseala valitseja (KKA) nõusolekul. Teie üritusel on kavandatud ${participants} osalejat — see lävend on ületatud.`,
+      extra: "Enamik kaitsealade kaitse-eeskirju sätestab 20–50 osaleja lävendid.",
+      suggestion: "See on tavaline — KKA annab sageli nõusoleku tingimustega. Oluline on taotlus esitada.",
+      legal: "LKS § 36; kaitse-eeskirja § 5 lg 4 (erinev alade kaupa)"
+    });
+  } else if (participants > 20) {
+    findings.push({
+      layer: 1,
+      severity: "yellow",
+      title: "20–50 osalejat — nõusolek vajalik (enamikul aladel)",
+      body: `Paljude kaitsealade kaitse-eeskirjad sätestab, et üle 20 osalejaga rahvaürituse korraldamiseks on vajalik kaitseala valitseja nõusolek. Teie üritusel on kavandatud ${participants} osalejat.`,
+      extra: null,
+      suggestion: "Esitage taotlus KKA-le — see on standardprotseduur.",
+      legal: "Erinev kaitsealade kaupa — kontrollige konkreetset kaitse-eeskirja"
+    });
+  }
+
+  // --- Water activity extra check ---
+  if (activity === "kaanoosõit") {
+    findings.push({
+      layer: 1,
+      severity: "yellow",
+      title: "Veetegevus — mootorpaadikasutus erikord",
+      body: "Kaanuumatk on kaitsealadel üldiselt lubatud. Kui kasutate mootorpaate, kehtivad rangemad reeglid — enamikul kaitsealadel on mootorpaadiga sõitmine piiratud kiirusega või teatud veekogudel keelatud.",
+      extra: null,
+      suggestion: "Märkige taotluses selgelt, kas kasutatakse aireste või mootorpaate.",
+      legal: "LKS § 36 lg 4; kaitse-eeskirja veereziim"
+    });
+  }
+
+  // --- EELIS WFS query (async) ---
+  let eelisResult = null;
+  try {
+    const features = await queryEELIS(area);
+    if (features && features.length > 0) {
+      const f = features[0];
+      eelisResult = {
+        name: f.properties?.nimetus || area,
+        type: f.properties?.tyyp || "kaitseala",
+        code: f.properties?.objekt_id || null
+      };
+    }
+  } catch(e) {}
+
+  // --- Overall severity ---
+  let overall = "green";
+  if (findings.some(f => f.severity === "red"))    overall = "red";
+  else if (findings.some(f => f.severity === "yellow")) overall = "yellow";
+
+  if (findings.length === 0) {
+    findings.push({
+      layer: 0,
+      severity: "green",
+      title: "Hooajalised otsekonfliktid puuduvad",
+      body: "Sisestatud andmete põhjal ei tuvastatud konkreetseid hooajalisi piiranguid valitud kuupäeval. See ei tähenda automaatselt heakskiitu — KKA hindab ka muid tegureid (marsruut, EELIS liigid, parkimine jne).",
+      extra: null,
+      suggestion: null,
+      legal: null
+    });
+  }
+
+  // --- RENDER ---
+  const overallConfig = {
+    red: {
+      icon: "🔴",
+      title: "Kõrge risk — taotlust tõenäoliselt ei kinnitata",
+      sub: "Tuvastati üks või mitu selget piirangute konflikti. Soovitame muuta kuupäeva, ala või marsruuti."
+    },
+    yellow: {
+      icon: "🟡",
+      title: "Mõõdukas risk — tõenäoliselt antav tingimustega",
+      sub: "Üritus on teostatav, aga KKA lisab spetsiifilisi tingimusi. Valmistage taotlus hoolikalt ette."
+    },
+    green: {
+      icon: "🟢",
+      title: "Madal risk — tõenäoliselt antav",
+      sub: "Hooajalised otsesed piirangud puuduvad. Esitage taotlus vähemalt 4–6 nädalat ette."
+    }
+  }[overall];
+
+  let html = `
+    <div class="card">
+      <div class="result-header result-${overall}">
+        <div class="result-icon">${overallConfig.icon}</div>
+        <div>
+          <div class="result-title">${overallConfig.title}</div>
+          <div class="result-sub">${overallConfig.sub}</div>
+        </div>
+      </div>
+  `;
+
+  if (eelisResult) {
+    html += `<div class="finding finding-blue">
+      <h3>📡 EELIS tuvastus <span class="eelis-badge">EELIS WFS</span></h3>
+      <p>Ala: <strong>${eelisResult.name}</strong> (${eelisResult.type})${eelisResult.code ? ` — kood: ${eelisResult.code}` : ''}</p>
+      <p class="legal">Andmed: Eesti Looduse Infosüsteem (gsavalik.envir.ee), CC-BY 4.0</p>
+    </div>`;
+  }
+
+  // Findings
+  const redFindings    = findings.filter(f => f.severity === "red");
+  const yellowFindings = findings.filter(f => f.severity === "yellow");
+  const greenFindings  = findings.filter(f => f.severity === "green");
+
+  if (redFindings.length) {
+    html += `<div class="section-title">❌ Otsesed konfliktid (${redFindings.length})</div>`;
+    for (const f of redFindings) html += renderFinding(f);
+  }
+  if (yellowFindings.length) {
+    html += `<div class="section-title">⚠️ Tähelepanuvajav (${yellowFindings.length})</div>`;
+    for (const f of yellowFindings) html += renderFinding(f);
+  }
+  if (greenFindings.length) {
+    html += `<div class="section-title">✅ Positiivne (${greenFindings.length})</div>`;
+    for (const f of greenFindings) html += renderFinding(f);
+  }
+
+  // Universal conditions
+  html += `
+    <hr class="divider">
+    <div class="section-title">📋 Tüüptingimused mida KKA alati lisab</div>
+    <div class="finding finding-gray">
+      <h3>Universaalsed nõuded (kõigil kaitsealadel)</h3>
+      <p>Need tingimused esinevad peaaegu igas KKA nõusolekus. Kirjutage need juba taotlusesse — see näitab KKA-le teie professionaalsust:</p>
+      <ul class="conditions">
+        ${UNIVERSAL_CONDITIONS.map(c => `<li>${c}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+
+  // Timing
+  const today = new Date();
+  const daysAhead = Math.round((date - today) / 86400000);
+  const timingColor = daysAhead < 14 ? "red" : daysAhead < 28 ? "yellow" : "green";
+  const timingMsg = daysAhead < 0 ? "Kuupäev on minevikus."
+    : daysAhead < 14 ? `⚠️ Vähem kui 2 nädalat — taotlus peaks olema juba esitatud! KKA vastab keskmiselt 17 päevaga.`
+    : daysAhead < 28 ? `⚠️ 2–4 nädalat ette — piisav, aga esitage kohe. KKA vastab keskmiselt 17 päevaga.`
+    : `✅ ${daysAhead} päeva ette — piisav aeg. Esitage taotlus.`;
+
+  html += `
+    <div class="finding finding-${timingColor}">
+      <h3>🕐 Taotluse ajastus</h3>
+      <p>${timingMsg}</p>
+      <p class="legal">Andmeanalüüs: 202 taotluse vastusaeg keskmiselt 17 päeva; seisukoht/keeldumine kuni 27 päeva</p>
+    </div>
+  `;
+
+  // What to include in application
+  html += `
+    <hr class="divider">
+    <div class="section-title">📝 Taotlusesse soovitav lisada</div>
+    <div class="finding finding-blue">
+      <h3>Taotluse kontrollnimekiri</h3>
+      <ul class="conditions">
+        <li><strong>GPX-fail</strong> — täpne marsruut koordinaatidega (de facto nõue kõigis KKA otsustes)</li>
+        <li><strong>Osalejate arv</strong> ja korralduse kirjeldus (start/finiš, toitlustus, parkimine)</li>
+        <li><strong>Kaitseala kaitse-eeskiri</strong> — nimetage konkreetset VV määrust, näidake et olete kodutöö teinud</li>
+        <li><strong>RMK kooskõlastus</strong> — kui ala haldab RMK (Lahemaa, Kõrvemaa, Otepää jne), lisage eraldi</li>
+        <li><strong>Kaitsealuste liikide elupaigad</strong> — kirjutage: "Meile teadaolevalt jääb marsruut EELIS-e andmetel..."</li>
+        <li><strong>Alternatiivid</strong> — pakkuge ette alternatiivne kuupäev, juhuks kui praegune ei sobi</li>
+      </ul>
+    </div>
+  </div>`;
+
+  resultsDiv.innerHTML = html;
+  resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderFinding(f) {
+  const catTag = f.tag ? `<span class="tag tag-${f.tag.includes('I k') && !f.tag.includes('II') && !f.tag.includes('III') ? 'i' : f.tag.includes('II k') ? 'ii' : 'iii'}">${f.tag}</span>` : '';
+  return `
+    <div class="finding finding-${f.severity}">
+      <h3>${f.title}${catTag}${f.species ? ` <em style="font-weight:400;font-size:.85em;color:#555">(${f.species})</em>` : ''}</h3>
+      <p>${f.body}</p>
+      ${f.extra ? `<p><strong>${f.extra}</strong></p>` : ''}
+      ${f.suggestion ? `<div class="suggestion"><strong>Soovitus:</strong> ${f.suggestion}</div>` : ''}
+      ${f.legal ? `<p class="legal">📖 ${f.legal}</p>` : ''}
+    </div>`;
+}
+
+// Set today's date + 30 days as default
+const d = new Date();
+d.setDate(d.getDate() + 30);
+document.getElementById('dateInput').value = d.toISOString().split('T')[0];
+</script>
+</body>
+</html>
