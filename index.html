@@ -186,7 +186,7 @@
         <option value="suusatamine">Suusamaraton / suusatamine</option>
         <option value="kaanoosõit">Kanuumatkamine / veesport</option>
         <option value="matk">Matk / loodustuur</option>
-        <option value="muu">Muu rahvaøritus</option>
+        <option value="muu">Muu rahvaüritus</option>
       </select>
     </div>
 
@@ -265,7 +265,7 @@
       </div>
       <div class="check-row">
         <input type="checkbox" id="tpl_prior">
-        <label for="tpl_prior" style="font-weight:500;margin:0">Üritusel on varasem KKA nõusolek (korduvøritus)</label>
+        <label for="tpl_prior" style="font-weight:500;margin:0">Üritusel on varasem KKA nõusolek (korduvüritus)</label>
       </div>
     </div>
 
@@ -302,20 +302,20 @@
 // ============================================================
 // LAYER 1: KÕVAKODEERITUD HOOAJALISED PIIRANGUD
 // ============================================================
-const SEASOMAT/RULES = [
+const SEASONAL_RULES = [
   {
     id: "merikotkas_skv", species: "Merikotkas", latinName: "Haliaeetus albicilla", category: "I",
-    startM: 2, startD: 15, endM: 7, endD: 31, zoneTypes: ["sihtkaitsevönd", "pøsielupaik"],
+    startM: 2, startD: 15, endM: 7, endD: 31, zoneTypes: ["sihtkaitsevönd", "püsielupaik"],
     severity: "red", title: "Merikotka pesitsuskeeld",
-    description: "Merikotka pøsielupaiga sihtkaitsevööndis on ajavahemikus 15.02–31.07 liikumine keelatud. Merikotkas on väga tundlik häirimise suhtes — üks øhekordne häiring võib kurna høljata.",
+    description: "Merikotka püsielupaiga sihtkaitsevööndis on ajavahemikus 15.02–31.07 liikumine keelatud. Merikotkas on väga tundlik häirimise suhtes — üks ühekordne häiring võib kurna hüljata.",
     suggestion: "Nihutage üritus 01.08 – 14.02 perioodi. August–oktoober on turvaline.",
     legal: "KM 13.01.2005 määrus nr 2; LKS § 50"
   },
   {
     id: "metsis_skv", species: "Metsis", latinName: "Tetrao urogallus", category: "II",
-    startM: 2, startD: 1, endM: 5, endD: 31, zoneTypes: ["sihtkaitsevönd", "pøsielupaik"],
+    startM: 2, startD: 1, endM: 5, endD: 31, zoneTypes: ["sihtkaitsevönd", "püsielupaik"],
     severity: "red", title: "Metsise pesitsuskeeld",
-    description: "Metsise pøsielupaiga sihtkaitsevööndis on ajavahemikus 01.02–31.05 liikumine keelatud. Piiranguvööndis on keelatud kontrollpunktide paigaldamine leiukoha lähedale.",
+    description: "Metsise püsielupaiga sihtkaitsevööndis on ajavahemikus 01.02–31.05 liikumine keelatud. Piiranguvööndis on keelatud kontrollpunktide paigaldamine leiukoha lähedale.",
     suggestion: "Lubatud periood on 01.06–31.01. Juuni on esimene ohutu kuu.",
     legal: "KM 13.01.2005 määrus nr 1; LKS § 50"
   },
@@ -332,7 +332,7 @@ const SEASOMAT/RULES = [
 // ============================================================
 // LAYER 2: ALA-SPETSIIFILISED VIIBIMISKEELUD
 // ============================================================
-const ARGA_RESTRICTIONS = [
+const AREA_RESTRICTIONS = [
   {
     areaKeywords: ["orkjärve", "orkjarve"], zone: "Orkjärve raba SKV",
     startM: 2, startD: 1, endM: 5, endD: 31, severity: "red",
@@ -456,16 +456,16 @@ const TEMPLATE_STRUCTURES = {
     noise: "Üritusel kasutatakse üksnes aireste — mootorpaate matkamarsruudil ei kasutata. Osalejad on kohustatud vee-elustiku häirimist vältima.",
     waves: "Paadid väljuvad stardikohast 10-minutiliste intervallidega, et vältida koondumist kitsastes kohtades.",
     cleanup: "Kõik laagrialad kooristatakse; mitte midagi ei jäeta loodusesse.",
-    extraActivity: "Osalejaid teavitatakse kaldaniitudel pesitsevatest veelindudest ja kohustuslikest ohutuskaugustes."
+    extraActivity: "Osalejaid teavitatakse kaldaniitudel pesitsevatest veelindudest ja kohustuslikest ohutuskaugustest."
   },
-  matk: C�{
+  matk: {
     label: "matk / loodustuur",
     legalRef: "LKS § 36 lg 4; VV {AREA_REG}",
     routeClause: "Matk toimub üksnes tähistas ja olemasolevatel matkamarsruutidel. GPX-fail esitatakse lisana. Metsateedelt kõrvale kaldumist ei toimu.",
-    controlPoints: "Peatuskohad on valitud olemasolevatesse RMK pehkealadesse ja lõkkeplatsidesse. Telkimist kaitsealal ei toimu.",
+    controlPoints: "Peatuskohad on valitud olemasolevatesse RMK puhkealadesse ja lõkkeplatsidesse. Telkimist kaitsealal ei toimu.",
     noise: "Rühmad liiguvad vaikselt, loomi mitte häirides. Helivõimendust ei kasutata.",
-    waves: "Rühmad (max {WAVES_SIZE} inimest) väljuvad 30-minutiliste intervallidega, et vähendada koormust øksikutel lõikudel.",
-    cleanup: "Matka lõppedes tagab juhendaja, et matkarajal ei jää maha øhtegi jôämetükki.",
+    waves: "Rühmad (max {WAVES_SIZE} inimest) väljuvad 30-minutiliste intervallidega, et vähendada koormust üksikutel lõikudel.",
+    cleanup: "Matka lõppedes tagab juhendaja, et matkarajal ei jää maha ühtegi jäätmetükki.",
     extraActivity: "Matka juhendaja on läbinud loodusgiidide koolituse ja tunneb kaitseala kaitse-eeskirja."
   },
   muu: {
@@ -474,8 +474,8 @@ const TEMPLATE_STRUCTURES = {
     routeClause: "Üritus toimub üksnes olemasolevatel aladel ja radadel vastavalt lisatud plaanile.",
     controlPoints: "Kõik infrastruktuurielemendid paiknevad olemasolevatel aladel. Kaitsealuste liikide elupaiku ei kasutata.",
     noise: "Müratase hoitakse miinimumil. Helivõimendust kasutatakse üksnes ettenähtud aladel.",
-    waves: "Osalejate voog jaotatakse ajaliselt, et vältida massiivset koormust øksikutel lõikudel.",
-    cleanup: "Korraldaja tagab ala heakorra enne øritust ja koristab ala pärast øritust.",
+    waves: "Osalejate voog jaotatakse ajaliselt, et vältida massiivset koormust üksikutel lõikudel.",
+    cleanup: "Korraldaja tagab ala heakorra enne üritust ja koristab ala pärast üritust.",
     extraActivity: ""
   }
 };
@@ -540,7 +540,7 @@ const KNOWN_AREAS = [
   "Lahemaa rahvuspark", "Soomaa rahvuspark", "Otepää looduspark",
   "Luitemaa looduskaitseala", "Matsalu rahvuspark", "Vilsandi rahvuspark",
   "Endla looduskaitseala", "Nigula looduskaitseala",
-  "Pøhajärve looduskaitseala", "Aegviidu looduskaitseala",
+  "Pühajärve looduskaitseala", "Aegviidu looduskaitseala",
   "Alam-Pedja looduskaitseala", "Muraka looduskaitseala",
   "Karula rahvuspark", "Haanja looduspark", "Emajõe-Suursoo kaitseala",
   "Orkjärve looduskaitseala", "Türisalu maastikukaitseala",
@@ -644,8 +644,8 @@ async function runCheck() {
   // Participants
   if (participants > 50) {
     findings.push({ layer: 1, severity: "yellow", title: "Üle 50 osaleja — kohustuslik KKA nõusolek",
-      body: `Rohkem kui 50 osalejaga rahvaørituse korraldamine kaitsealal on lubatud øksnes KKA nõusolekul. Kavandatud: ${participants} osalejat.`,
-      extra: "Enamik kaitsealade kaitse-eeskirja sätestab 20–50 osaleja lävendid.",
+      body: `Rohkem kui 50 osalejaga rahvaürituse korraldamine kaitsealal on lubatud üksnes KKA nõusolekul. Kavandatud: ${participants} osalejat.`,
+      extra: "Enamik kaitsealade kaitse-eeskirju sätestab 20–50 osaleja lävendid.",
       suggestion: "See on tavaline — KKA annab sageli nõusoleku tingimustega.",
       legal: "LKS § 36; kaitse-eeskirja § 5 lg 4" });
   } else if (participants > 20) {
@@ -656,9 +656,9 @@ async function runCheck() {
 
   if (activity === "kaanoosõit") {
     findings.push({ layer: 1, severity: "yellow", title: "Veetegevus — mootorpaadikasutus erikord",
-      body: "Kanuumatk on kaitsealadel øldiselt lubatud. Mootorpaatide kasutamisel kehtivad rangemad reeglid.",
+      body: "Kanuumatk on kaitsealadel üldiselt lubatud. Mootorpaatide kasutamisel kehtivad rangemad reeglid.",
       extra: null, suggestion: "Märkige taotluses selgelt, kas kasutatakse aireste või mootorpaate.",
-      legal: "LKS § 36 lg 4; kaitse-eeskirja veerežiim" });
+      legal: "LKS § 36 lg 4; kaitse-eeskirja veereziim" });
   }
 
   // EELIS
@@ -746,14 +746,14 @@ async function runCheck() {
   html += `<div class="appendix-wrap">
     <hr class="divider">
     <button class="appendix-btn" id="appendixBtn" onclick="toggleAppendix()">
-      <span class="arr">▶</span> Lisa: Üksikasjalik liikide ja tsoonide analøüs
+      <span class="arr">▶</span> Lisa: Üksikasjalik liikide ja tsoonide analüüs
     </button>
     <div class="appendix-inner" id="appendixInner">
       <div class="finding finding-gray" style="margin-top:8px">
         <h3>📚 Taustinfo: seaduslikud alused</h3>
         <ul class="conditions">
-          <li><strong>LKS § 36</strong> — rahvaørituste korraldamine kaitsealal nõab kaitseala valitseja nõusolekut</li>
-          <li><strong>LKS § 50–55</strong> — I–III kategooria kaitsealused liigid, häirimine keelatud</li>>
+          <li><strong>LKS § 36</strong> — rahvaürituste korraldamine kaitsealal nõuab kaitseala valitseja nõusolekut</li>
+          <li><strong>LKS § 50–55</strong> — I–III kategooria kaitsealused liigid, häirimine keelatud</li>
           <li><strong>VV määrus nr 2 (2005)</strong> — merikotka kaitse; viibimiskeeld 15.02–31.07 SKV-des</li>
           <li><strong>VV määrus nr 1 (2005)</strong> — metsise kaitse; viibimiskeeld 01.02–31.05 SKV-des</li>
           <li><strong>Kaitsealade kaitse-eeskirjad</strong> — ala-spetsiifilised piirangud (VV määrused)</li>
@@ -884,7 +884,7 @@ function generateDraft() {
   txt += `Üritus:         ${name}\n`;
   txt += `Kuupäev:        ${evDate}\n`;
   txt += `Kellaaeg:       ${startT} – ${endT}\n`;
-  txt += `Tegevuse tøøp:  ${tmpl.label}\n`;
+  txt += `Tegevuse tüüp:  ${tmpl.label}\n`;
   txt += `Osalejate arv:  kuni ${pax} inimest\n`;
   txt += `Start / finiš:  ${startLoc}\n\n`;
 
@@ -895,7 +895,7 @@ function generateDraft() {
 
   txt += `3. KESKKONNAKAITSELISED MEETMED\n${'─'.repeat(30)}\n`;
   txt += `Kontrollpunktid ja abipunktid:\n${tmpl.controlPoints}\n\n`;
-  txt += `Møra ja liiklemine:\n${tmpl.noise}\n\n`;
+  txt += `Müra ja liiklemine:\n${tmpl.noise}\n\n`;
   txt += `Osalejate juhtimine:\n${wavesClause}\n\n`;
   txt += `Heakord:\n${tmpl.cleanup}\n`;
   if (tmpl.extraActivity) txt += `\nLisainfo:\n${tmpl.extraActivity}\n`;
@@ -906,7 +906,7 @@ function generateDraft() {
 
   if (hasRmk) {
     txt += `5. RMK KOOSKÕLASTUS\n${'─'.repeat(30)}\n`;
-    txt += `Oleme esitanud / kavandame esitada kooskõlastustaotluse RMK-le (Riigimetsa Majandamise Keskus), kelle hallataval alal øritus toimub. Kooskõlastuse kinnitus esitatakse KKA-le lisana enne ürituse toimumist.\n\n`;
+    txt += `Oleme esitanud / kavandame esitada kooskõlastustaotluse RMK-le (Riigimetsa Majandamise Keskus), kelle hallataval alal üritus toimub. Kooskõlastuse kinnitus esitatakse KKA-le lisana enne ürituse toimumist.\n\n`;
   }
 
   const altSect = hasRmk ? '6' : '5';
@@ -920,7 +920,7 @@ function generateDraft() {
   if (isPrior) {
     const priorSect = parseInt(altSect) + 1;
     txt += `${priorSect}. EELNEV KOGEMUS\n${'─'.repeat(30)}\n`;
-    txt += `Korraldaja on sarnast üritust ${area} kaitsealal korraldanud ka varasematel aastatel ning saanud selleks KKA nõusoleku. Varasemad øritused on toimunud ilma looduskaitseliste probleemideta.\n\n`;
+    txt += `Korraldaja on sarnast üritust ${area} kaitsealal korraldanud ka varasematel aastatel ning saanud selleks KKA nõusoleku. Varasemad üritused on toimunud ilma looduskaitseliste probleemideta.\n\n`;
   }
 
   if (extra) {
@@ -932,7 +932,7 @@ function generateDraft() {
   const lisSect = parseInt(altSect) + (isPrior ? 2 : 1) + (extra ? 1 : 0);
   txt += `${lisSect}. LISAD\n${'─'.repeat(30)}\n`;
   if (hasGpx) txt += `  • Lisa 1: GPX-fail võistlus-/matkarajaga (koordinaatidega)\n`;
-  else txt += `  • Lisa 1: Marsruudi kaart / kirjeldus [GPX-fail lisatakse enne øritust]\n`;
+  else txt += `  • Lisa 1: Marsruudi kaart / kirjeldus [GPX-fail lisatakse enne üritust]\n`;
   if (hasRmk) txt += `  • Lisa 2: RMK kooskõlastuskirja koopia\n`;
   txt += `  • Lisa ${hasRmk ? 3 : 2}: Osalejate arvu prognoos ajaliste intervallidega\n\n`;
 
@@ -959,9 +959,9 @@ function analyzeApplication(p) {
 
   // 1. GPX
   if (p.hasGpx) {
-    tips.push({ type:'green', icon:'✅', title:'GPX-fail lisatud', body:'Väga hea — GPX on de facto nõue peaaegu kõigis KKA nõusolekutes. Selle puudumine on øks levinuimaid tagasiløkkamise põhjuseid.' }); score += 2;
+    tips.push({ type:'green', icon:'✅', title:'GPX-fail lisatud', body:'Väga hea — GPX on de facto nõue peaaegu kõigis KKA nõusolekutes. Selle puudumine on üks levinuimaid tagasilükkamise põhjuseid.' }); score += 2;
   } else {
-    tips.push({ type:'red', icon:'❌', title:'GPX-fail puudub', body:'Kriitiliselt oluline! 94% KKA nõusolekutest nõaavad GPX-faili. Ilma selleta on taotlus peaaegu kindlalt tagasiløkatud või jäetud ootelolekusse. Lisage GPX enne esitamist.' }); score += 0;
+    tips.push({ type:'red', icon:'❌', title:'GPX-fail puudub', body:'Kriitiliselt oluline! 94% KKA nõusolekutest nõuavad GPX-faili. Ilma selleta on taotlus peaaegu kindlalt tagasilükatud või jäetud ootelolekusse. Lisage GPX enne esitamist.' }); score += 0;
   }
 
   // 2. Alt date
@@ -982,7 +982,7 @@ function analyzeApplication(p) {
 
   // 4. Participant count
   if (p.pax > 200) {
-    tips.push({ type:'yellow', icon:'⚠️', title:'Suur osalejate arv — kaaluge lainestartimist', body:`${p.pax} osalist on kaitsealal märkimisväärne koormus. KKA analüøsist: üritused øle 200 osalisega saavad 2× sagedamini lisatingimusi. Kaaluge 2–3 lainestardiga lahendust — see tugevdab taotlust.` }); score += 1;
+    tips.push({ type:'yellow', icon:'⚠️', title:'Suur osalejate arv — kaaluge lainestartimist', body:`${p.pax} osalist on kaitsealal märkimisväärne koormus. KKA analüüsist: üritused üle 200 osalisega saavad 2× sagedamini lisatingimusi. Kaaluge 2–3 lainestardiga lahendust — see tugevdab taotlust.` }); score += 1;
   } else if (p.pax > 0) {
     score += 1;
   }
