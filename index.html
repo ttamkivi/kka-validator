@@ -389,8 +389,8 @@
         </div>
       </div>
       <div class="stats-section">
-        <h3>📌 Kõige levinum viga: GPX fail puudub</h3>
-        <p style="font-size:.88rem;color:#546e7a">Iga kolmas tagasilükkamine on tingitud puuduvast GPX-failist — lihtne, aga sagedane viga. Lisage GPX-fail igasse taotlusesse.</p>
+        <h3>📌 GPX-fail: piirkonniti erinev nõue</h3>
+        <p style="font-size:.88rem;color:#546e7a">GPX-faili nõue sõltub KKA piirkonnast — mõnes piirkonnas piisab asukohaskeemist, teises nõutakse GPX-rada. Osa tagasilükkamisi on seotud puuduva GPX-failiga, kuid see ei kehti ühtviisi kõikjal. Küsi oma KKA piirkonnakontaktilt mis formaadis marsruut esitada.</p>
       </div>
     </div>
 
@@ -466,7 +466,7 @@ const SEASONAL_RULES = [
     startM: 2, startD: 1, endM: 5, endD: 31, zoneTypes: ["sihtkaitsevönd", "püsielupaik"],
     severity: "red", title: "Metsise pesitsuskeeld",
     description: "Metsise püsielupaiga sihtkaitsevööndis on ajavahemikus 01.02–31.05 liikumine keelatud. Piiranguvööndis on keelatud kontrollpunktide paigaldamine leiukoha lähedale.",
-    suggestion: "Lubatud periood on 01.06–31.01. Juuni on esimene ohutu kuu.",
+    suggestion: "Juriidiline keeld lõpeb 31.05. ⚠️ KKA praktika: Põhja-Kõrvemaal antakse luba üldjuhul alates 30.06–15.07 (mitte juuni algusest). Küsi KKA-lt konkreetne varaseim lubatav kuupäev oma piirkonnas — see varieerub aasta- ja piirkonniti.",
     legal: "KM 13.01.2005 määrus nr 1; LKS § 50"
   },
   {
@@ -781,6 +781,19 @@ async function runCheck() {
           extra: null, suggestion: ar.suggestion, legal: ar.legal });
       }
     }
+  }
+
+  // LAYER 2.5: SUURE ALA HOIATUS
+  const LARGE_AREA_KEYWORDS = ["rahvuspark", "looduskaitseala", "looduspark", "maastikukaitseala"];
+  const isLargeArea = LARGE_AREA_KEYWORDS.some(k => areaLower.includes(k));
+  const hasSpecificLocation = area.length > 30 || areaLower.includes("küla") || areaLower.includes("mägi") || areaLower.includes("järv") || areaLower.includes("jõgi");
+  if (isLargeArea && !hasSpecificLocation) {
+    findings.push({ layer: 2, severity: "yellow",
+      title: "🗺️ Suur kaitseala — piirangud sõltuvad täpsest asukohast",
+      body: `Sisestasid suure kaitseala nime ("${area}"). Tegelikud piirangud sõltuvad sellest, kus täpselt üritus toimub — suurel alal on eri tsoonid (SKV, PV, püsielupaigad) eri piirangutega. Merikotkas näiteks elab konkreetsete pesapuude ümber, mitte kogu kaitsealal.`,
+      extra: null,
+      suggestion: "Täpsusta marsruut (küla, mäestik, järv) või saada X-GIS/EELIS-est kaart ja võrdle tegelike püsielupaigapiire. Rakendus näitab konservatiivset hinnangut kogu ala kohta.",
+      legal: "X-GIS: xgis.maaamet.ee | EELIS: register.keskkonnainfo.ee" });
   }
 
   // LAYER 3
@@ -1245,7 +1258,7 @@ function switchTab(tab) {
 // ============================================================
 const STATS_DATA = {
   rejections: [
-    { label: 'GPX fail puudub', pct: 31 },
+    { label: 'GPX fail puudub (piirkonniti erinev)', pct: 31 },
     { label: 'Vale kuupäev / pesitsusperiood konflikt', pct: 24 },
     { label: 'Osalejate arv liiga suur (ei ole arvestatud)', pct: 18 },
     { label: 'Metsis konflikti piirkonnas', pct: 14 },
