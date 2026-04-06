@@ -783,6 +783,17 @@ async function runCheck() {
     </div>
   </div>`;
 
+
+  // Disclaimer for large protected areas (Tiit Peki tagasiside)
+  const speciesFindings = findings.filter(f => f.species);
+  if (speciesFindings.length > 0) {
+    html += `<div class="finding finding-blue" style="margin-top:16px">
+      <h3>ℹ️ Märkus kaitseala suuruse kohta</h3>
+      <p>Kuvatud liigipiirangud põhinevad kaitseala <strong>üldistel piiridel</strong>. Suurte kaitsealade (nt Alutaguse, Kõrvemaa) puhul võivad tegelikud ohud olla väiksemad kui kuvatav nimekiri — kaitseala võib sisaldada piirkondi, kus konkreetseid liike tegelikult ei esine.</p>
+      <p style="margin-top:8px">Täpse hinnangu saamiseks konsulteeri KKA-ga või kontrolli <a href="https://maaamet.ee" target="_blank">Maa-ameti kaardirakendusest</a>, millised liigid Sinu marsruudil tegelikult elavad.</p>
+    </div>`;
+  }
+
   // CTA for template
   html += `<hr class="divider">
     <button class="btn-secondary" onclick="openTemplateCard()">
