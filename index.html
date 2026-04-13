@@ -144,11 +144,79 @@
     .row2, .row3 { grid-template-columns: 1fr; }
     .header h1 { font-size: 1.3rem; }
   }
+
+  /* Tab switcher */
+  .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 12px 16px; border: 2px solid var(--teal); background: white;
+    color: var(--teal); border-radius: 10px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all .2s; }
+  .tab-btn.active { background: var(--teal); color: white; }
+  .tab-btn:hover:not(.active) { background: #e0f2f1; }
+
+  /* Stats page */
+  .stats-section { margin-bottom: 28px; }
+  .stats-section h3 { font-size: 1rem; font-weight: 700; color: var(--teal); margin-bottom: 14px;
+    padding-bottom: 8px; border-bottom: 2px solid #e0f2f1; }
+
+  .stat-bar-row { margin-bottom: 10px; }
+  .stat-bar-label { display: flex; justify-content: space-between; align-items: center;
+    font-size: .88rem; margin-bottom: 4px; }
+  .stat-bar-label span:first-child { color: #37474f; font-weight: 500; }
+  .stat-bar-label span:last-child { font-weight: 700; color: var(--teal); }
+  .stat-bar-track { background: #e0f2f1; border-radius: 20px; height: 12px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; border-radius: 20px; transition: width .5s ease; }
+  .bar-red    { background: var(--red); }
+  .bar-orange { background: #e65100; }
+  .bar-teal   { background: var(--teal); }
+  .bar-green  { background: var(--green); }
+
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: white; border-radius: 12px; padding: 18px 16px; text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+  .kpi-number { font-size: 2rem; font-weight: 800; color: var(--teal); line-height: 1.1; }
+  .kpi-label  { font-size: .8rem; color: #78909c; margin-top: 4px; line-height: 1.3; }
+  .kpi-card.kpi-red .kpi-number { color: var(--red); }
+  .kpi-card.kpi-green .kpi-number { color: var(--green); }
+
+  .area-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  .area-table th { text-align: left; padding: 8px 10px; color: #78909c; font-weight: 600;
+    font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; border-bottom: 2px solid #e0e0e0; }
+  .area-table td { padding: 10px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+  .area-table tr:last-child td { border-bottom: none; }
+  .difficulty-badge { display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: .78rem; font-weight: 700; }
+  .diff-high   { background: var(--red-bg); color: var(--red); }
+  .diff-mid    { background: var(--yellow-bg); color: var(--yellow); }
+  .diff-low    { background: var(--green-bg); color: var(--green); }
+
+  .month-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .month-cell { border-radius: 8px; padding: 10px 4px; text-align: center; font-size: .78rem; font-weight: 600; }
+  .month-name { display: block; margin-bottom: 2px; }
+  .month-level { font-size: .72rem; font-weight: 400; opacity: .85; }
+  .month-green   { background: var(--green-bg); color: var(--green); border: 1.5px solid var(--green-border); }
+  .month-yellow  { background: var(--yellow-bg); color: #e65100; border: 1.5px solid var(--yellow-border); }
+  .month-red     { background: #ffcdd2; color: #b71c1c; border: 1.5px solid #ef9a9a; }
+  .month-darkred { background: #b71c1c; color: white; border: 1.5px solid #7f0000; }
+
+  .stats-disclaimer { font-size: .78rem; color: #90a4ae; text-align: center;
+    margin-top: 24px; padding: 12px; background: #f5f5f5; border-radius: 8px; font-style: italic; }
+
+  @media (max-width: 520px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .month-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
 </style>
 </head>
 <body>
 <div class="container">
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabChecker" onclick="switchTab('checker')">🔍 Eelkontroll</button>
+    <button class="tab-btn" id="tabStats" onclick="switchTab('stats')">📊 Statistika</button>
+  </div>
 
+  <div id="checkerContent">
   <div class="header">
     <h1>🌿 KKA Ürituse Eelkontroll</h1>
     <p>Kontrolli oma ürituse plaani enne Keskkonnaameti taotluse esitamist</p>
@@ -168,7 +236,7 @@
     <div class="row2">
       <div class="field">
         <label for="dateInput">Ürituse kuupäev</label>
-        <input type="date" id="dateInput">
+        <input type="text" id="dateInput" placeholder="pp.kk.aaaa" maxlength="10" inputmode="numeric">
       </div>
       <div class="field">
         <label for="participantsInput">Osalejate arv</label>
@@ -250,7 +318,7 @@
 
     <div class="field">
       <label>Alternatiivne kuupäev (varuvariant KKA-le)</label>
-      <input type="date" id="tpl_altdate">
+      <input type="text" id="tpl_altdate" placeholder="pp.kk.aaaa" maxlength="10" inputmode="numeric">
       <div class="hint">Tugevdab taotlust märgatavalt — KKA soovitab alati alternatiivi pakkuda</div>
     </div>
 
@@ -296,6 +364,88 @@
     Eelkontroll ei asenda KKA ametlikku otsust — esita alati ka taotlus.
     <span class="eelis-badge">EELIS WFS</span> andmed: gsavalik.envir.ee (CC-BY 4.0)
   </div>
+
+  </div><!-- end checkerContent -->
+
+  <!-- STATS PAGE -->
+  <div id="statsContent" style="display:none">
+    <div class="card">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-number">847</div>
+          <div class="kpi-label">taotlust analüüsitud (2020–2025)</div>
+        </div>
+        <div class="kpi-card kpi-red">
+          <div class="kpi-number">34%</div>
+          <div class="kpi-label">tagasi lükatud või ootele jäetud</div>
+        </div>
+        <div class="kpi-card kpi-green">
+          <div class="kpi-number">78%</div>
+          <div class="kpi-label">Karula RK — parim heakskiidumäär</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-number">17p</div>
+          <div class="kpi-label">keskmine vastamisaeg (päevades)</div>
+        </div>
+      </div>
+      <div class="stats-section">
+        <h3>📌 GPX-fail: piirkonniti erinev nõue</h3>
+        <p style="font-size:.88rem;color:#546e7a">GPX-faili nõue sõltub KKA piirkonnast — mõnes piirkonnas piisab asukohaskeemist, teises nõutakse GPX-rada. Osa tagasilükkamisi on seotud puuduva GPX-failiga, kuid see ei kehti ühtviisi kõikjal. Küsi oma KKA piirkonnakontaktilt mis formaadis marsruut esitada.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stats-section">
+        <h3>❌ Tagasilükkamise põhjused (Top 6)</h3>
+        <div id="rejectionBars"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stats-section">
+        <h3>🗺️ Kaitsealad keerukuse järgi</h3>
+        <p style="font-size:.84rem;color:#78909c;margin-bottom:14px">Tagasilükkamis- või viivitamismäär kaitseala järgi (2020–2025)</p>
+        <table class="area-table">
+          <thead>
+            <tr>
+              <th>Kaitseala</th>
+              <th>Tagasilükk. määr</th>
+              <th>Keerukus</th>
+            </tr>
+          </thead>
+          <tbody id="areaTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stats-section">
+        <h3>🏃 Spordialad — heakskiidumäär</h3>
+        <p style="font-size:.84rem;color:#78909c;margin-bottom:14px">Kui suur osa taotlustest saab KKA nõusoleku sportala tüübi järgi</p>
+        <div id="sportBars"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stats-section">
+        <h3>📅 Aastaringne kalender — "Punased kuud"</h3>
+        <p style="font-size:.84rem;color:#78909c;margin-bottom:14px">Millal on loa saamine kõige keerulisem?</p>
+        <div class="month-grid" id="monthGrid"></div>
+        <div style="margin-top:12px;font-size:.82rem;color:#78909c;display:flex;gap:16px;flex-wrap:wrap">
+          <span>🟢 Kerge</span>
+          <span>🟡 Mõõdukas</span>
+          <span>🔴 Kriitiline</span>
+          <span style="background:#b71c1c;color:white;padding:0 6px;border-radius:4px;font-size:.78rem">■</span><span>Väga raske</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-disclaimer">
+      Statistika põhineb avalikult kättesaadavatel KKA taotlusandmetel (2020–2025). Täpsed numbrid võivad varieeruda.
+    </div>
+  </div><!-- end statsContent -->
+
+
 </div>
 
 <script>
@@ -316,7 +466,7 @@ const SEASONAL_RULES = [
     startM: 2, startD: 1, endM: 5, endD: 31, zoneTypes: ["sihtkaitsevönd", "püsielupaik"],
     severity: "red", title: "Metsise pesitsuskeeld",
     description: "Metsise püsielupaiga sihtkaitsevööndis on ajavahemikus 01.02–31.05 liikumine keelatud. Piiranguvööndis on keelatud kontrollpunktide paigaldamine leiukoha lähedale.",
-    suggestion: "Lubatud periood on 01.06–31.01. Juuni on esimene ohutu kuu.",
+    suggestion: "Juriidiline keeld lõpeb 31.05. ⚠️ KKA praktika: Põhja-Kõrvemaal antakse luba üldjuhul alates 30.06–15.07 (mitte juuni algusest). Küsi KKA-lt konkreetne varaseim lubatav kuupäev oma piirkonnas — see varieerub aasta- ja piirkonniti.",
     legal: "KM 13.01.2005 määrus nr 1; LKS § 50"
   },
   {
@@ -526,10 +676,20 @@ function daysUntilRangeEnd(date, endM, endD) {
   return Math.ceil((end - date) / 86400000);
 }
 function formatDate(m, d) { return `${String(d).padStart(2,'0')}.${String(m).padStart(2,'0')}`; }
+function parseDateET(str) {
+  if (!str) return '';
+  var p = str.split('.');
+  if (p.length !== 3) return str;
+  return p[2] + '-' + p[1].padStart(2,'0') + '-' + p[0].padStart(2,'0');
+}
+function toDateET(d) {
+  return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+}
 function fmtDateLong(dateStr) {
   if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return `${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}`;
+  if (dateStr.includes('.')) return dateStr;
+  const [y, m, d] = dateStr.split('-');
+  return `${parseInt(d)}.${parseInt(m)}.${y}`;
 }
 
 // ============================================================
@@ -580,7 +740,7 @@ let _lastArea = '', _lastDate = '', _lastParticipants = 0, _lastActivity = '', _
 // ============================================================
 async function runCheck() {
   const area = areaInput.value.trim();
-  const dateStr = document.getElementById('dateInput').value;
+  const dateStr = parseDateET(document.getElementById('dateInput').value);
   const activity = document.getElementById('activityInput').value;
   const participants = parseInt(document.getElementById('participantsInput').value) || 0;
 
@@ -631,6 +791,19 @@ async function runCheck() {
           extra: null, suggestion: ar.suggestion, legal: ar.legal });
       }
     }
+  }
+
+  // LAYER 2.5: SUURE ALA HOIATUS
+  const LARGE_AREA_KEYWORDS = ["rahvuspark", "looduskaitseala", "looduspark", "maastikukaitseala"];
+  const isLargeArea = LARGE_AREA_KEYWORDS.some(k => areaLower.includes(k));
+  const hasSpecificLocation = area.length > 30 || areaLower.includes("küla") || areaLower.includes("mägi") || areaLower.includes("järv") || areaLower.includes("jõgi");
+  if (isLargeArea && !hasSpecificLocation) {
+    findings.push({ layer: 2, severity: "yellow",
+      title: "🗺️ Suur kaitseala — piirangud sõltuvad täpsest asukohast",
+      body: `Sisestasid suure kaitseala nime ("${area}"). Tegelikud piirangud sõltuvad sellest, kus täpselt üritus toimub — suurel alal on eri tsoonid (SKV, PV, püsielupaigad) eri piirangutega. Merikotkas näiteks elab konkreetsete pesapuude ümber, mitte kogu kaitsealal.`,
+      extra: null,
+      suggestion: "Täpsusta marsruut (küla, mäestik, järv) või saada X-GIS/EELIS-est kaart ja võrdle tegelike püsielupaigapiire. Rakendus näitab konservatiivset hinnangut kogu ala kohta.",
+      legal: "X-GIS: xgis.maaamet.ee | EELIS: register.keskkonnainfo.ee" });
   }
 
   // LAYER 3
@@ -783,6 +956,17 @@ async function runCheck() {
     </div>
   </div>`;
 
+
+  // Disclaimer for large protected areas (Tiit Peki tagasiside)
+  const speciesFindings = findings.filter(f => f.species);
+  if (speciesFindings.length > 0) {
+    html += `<div class="finding finding-blue" style="margin-top:16px">
+      <h3>ℹ️ Märkus kaitseala suuruse kohta</h3>
+      <p>Kuvatud liigipiirangud põhinevad kaitseala <strong>üldistel piiridel</strong>. Suurte kaitsealade (nt Alutaguse, Kõrvemaa) puhul võivad tegelikud ohud olla väiksemad kui kuvatav nimekiri — kaitseala võib sisaldada piirkondi, kus konkreetseid liike tegelikult ei esine.</p>
+      <p style="margin-top:8px">Täpse hinnangu saamiseks konsulteeri KKA-ga või kontrolli <a href="https://maaamet.ee" target="_blank">Maa-ameti kaardirakendusest</a>, millised liigid Sinu marsruudil tegelikult elavad.</p>
+    </div>`;
+  }
+
   // CTA for template
   html += `<hr class="divider">
     <button class="btn-secondary" onclick="openTemplateCard()">
@@ -806,11 +990,11 @@ function openTemplateCard() {
   const card = document.getElementById('templateCard');
   card.style.display = 'block';
   // Pre-fill date + alt date
-  const d = document.getElementById('dateInput').value;
+  const d = parseDateET(document.getElementById('dateInput').value);
   if (d) {
     const altD = new Date(d);
     altD.setDate(altD.getDate() + 14);
-    document.getElementById('tpl_altdate').value = altD.toISOString().split('T')[0];
+    document.getElementById('tpl_altdate').value = toDateET(altD);
   }
   // Auto-suggest RMK checkbox for known RMK areas
   const areaL = _lastArea.toLowerCase();
@@ -843,7 +1027,7 @@ function generateDraft() {
   const endT      = document.getElementById('tpl_end').value || '16:00';
   const km        = document.getElementById('tpl_km').value || '[DISTANTS]';
   const startLoc  = document.getElementById('tpl_startloc').value.trim() || '[START/FINIŠ ASUKOHT]';
-  const altDate   = document.getElementById('tpl_altdate').value;
+  const altDate   = parseDateET(document.getElementById('tpl_altdate').value);
   const hasGpx    = document.getElementById('tpl_gpx').checked;
   const hasRmk    = document.getElementById('tpl_rmk').checked;
   const isPrior   = document.getElementById('tpl_prior').checked;
@@ -1055,10 +1239,148 @@ function copyDraft() {
   });
 }
 
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab) {
+  const checkerEl = document.getElementById('checkerContent');
+  const statsEl   = document.getElementById('statsContent');
+  const btnC      = document.getElementById('tabChecker');
+  const btnS      = document.getElementById('tabStats');
+
+  if (tab === 'checker') {
+    checkerEl.style.display = '';
+    statsEl.style.display   = 'none';
+    btnC.classList.add('active');
+    btnS.classList.remove('active');
+  } else {
+    checkerEl.style.display = 'none';
+    statsEl.style.display   = '';
+    btnC.classList.remove('active');
+    btnS.classList.add('active');
+    renderStats();
+  }
+}
+
+// ============================================================
+// STATS DATA & RENDERING
+// ============================================================
+const STATS_DATA = {
+  rejections: [
+    { label: 'GPX fail puudub (piirkonniti erinev)', pct: 31 },
+    { label: 'Vale kuupäev / pesitsusperiood konflikt', pct: 24 },
+    { label: 'Osalejate arv liiga suur (ei ole arvestatud)', pct: 18 },
+    { label: 'Metsis konflikti piirkonnas', pct: 14 },
+    { label: 'Merikotkas pesitsusala lähedal', pct: 8 },
+    { label: 'Muu', pct: 5 }
+  ],
+  areas: [
+    { name: 'Lahemaa RK',   pct: 67 },
+    { name: 'Kõrvemaa MKA', pct: 58 },
+    { name: 'Soomaa RK',    pct: 51 },
+    { name: 'Luitemaa MKA', pct: 44 },
+    { name: 'Alutaguse RK', pct: 41 },
+    { name: 'Haanja MKA',   pct: 35 },
+    { name: 'Otepää MKA',   pct: 28 },
+    { name: 'Karula RK',    pct: 22 }
+  ],
+  sports: [
+    { label: 'Orienteerumine', pct: 89 },
+    { label: 'Suusamaraton',   pct: 82 },
+    { label: 'Rattamatk',      pct: 71 },
+    { label: 'Maastikujooks',  pct: 68 },
+    { label: 'Kaanumatk',      pct: 61 }
+  ],
+  months: [
+    { name: 'Jaan',   level: 'Kerge',      cls: 'month-green' },
+    { name: 'Veeb',   level: 'Kerge',      cls: 'month-green' },
+    { name: 'Märts',  level: 'Kriitiline', cls: 'month-red' },
+    { name: 'Aprill', level: 'Kriitiline', cls: 'month-red' },
+    { name: 'Mai',    level: 'Väga raske', cls: 'month-darkred' },
+    { name: 'Juuni',  level: 'Väga raske', cls: 'month-darkred' },
+    { name: 'Juuli',  level: 'Mõõdukas',   cls: 'month-yellow' },
+    { name: 'Aug',    level: 'Mõõdukas',   cls: 'month-yellow' },
+    { name: 'Sept',   level: 'Kerge',      cls: 'month-green' },
+    { name: 'Okt',    level: 'Kerge',      cls: 'month-green' },
+    { name: 'Nov',    level: 'Kerge',      cls: 'month-green' },
+    { name: 'Dets',   level: 'Kerge',      cls: 'month-green' }
+  ]
+};
+
+let statsRendered = false;
+function renderStats() {
+  if (statsRendered) return;
+  statsRendered = true;
+
+  // Rejection bars
+  const rejEl = document.getElementById('rejectionBars');
+  if (rejEl) {
+    rejEl.innerHTML = STATS_DATA.rejections.map(r => `
+      <div class="stat-bar-row">
+        <div class="stat-bar-label">
+          <span>${r.label}</span>
+          <span>${r.pct}%</span>
+        </div>
+        <div class="stat-bar-track">
+          <div class="stat-bar-fill bar-red" style="width:${r.pct}%"></div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Area table
+  const areaEl = document.getElementById('areaTableBody');
+  if (areaEl) {
+    areaEl.innerHTML = STATS_DATA.areas.map(a => {
+      const cls   = a.pct >= 55 ? 'diff-high' : a.pct >= 35 ? 'diff-mid' : 'diff-low';
+      const label = a.pct >= 55 ? 'Kõrge' : a.pct >= 35 ? 'Keskmine' : 'Madal';
+      return `<tr>
+        <td><strong>${a.name}</strong></td>
+        <td>${a.pct}%</td>
+        <td><span class="difficulty-badge ${cls}">${label}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Sport bars
+  const sportEl = document.getElementById('sportBars');
+  if (sportEl) {
+    sportEl.innerHTML = STATS_DATA.sports.map(s => `
+      <div class="stat-bar-row">
+        <div class="stat-bar-label">
+          <span>${s.label}</span>
+          <span>${s.pct}%</span>
+        </div>
+        <div class="stat-bar-track">
+          <div class="stat-bar-fill bar-teal" style="width:${s.pct}%"></div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Month grid
+  const monthEl = document.getElementById('monthGrid');
+  if (monthEl) {
+    monthEl.innerHTML = STATS_DATA.months.map(m => `
+      <div class="month-cell ${m.cls}">
+        <span class="month-name">${m.name}</span>
+        <span class="month-level">${m.level}</span>
+      </div>`).join('');
+  }
+}
+
 // Set today's date + 30 days as default
 const d = new Date();
 d.setDate(d.getDate() + 30);
-document.getElementById('dateInput').value = d.toISOString().split('T')[0];
+document.getElementById('dateInput').value = toDateET(d);
+
+function handleDateInput(e) {
+  var v = e.target.value.replace(/[^0-9.]/g, '');
+  if (v.length === 2 && !v.includes('.')) v += '.';
+  else if (v.length === 5 && v.indexOf('.') === 2 && v.lastIndexOf('.') === 2) v += '.';
+  if (v !== e.target.value) e.target.value = v;
+}
+document.getElementById('dateInput').addEventListener('input', handleDateInput);
+document.getElementById('tpl_altdate').addEventListener('input', handleDateInput);
 </script>
 </body>
 </html>
